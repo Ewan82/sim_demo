@@ -68,7 +68,7 @@ def s1_rmse(x0, sitenml='site.nml', point='high'):
     date, hv_mod, vv_mod, hv_ob, vv_ob = extract_s1_mod_obs_508(point, sitenml)
     rmse_hv = np.sqrt(np.sum((hv_mod - hv_ob)**2) / len(hv_ob.flatten()))
     rmse_vv = np.sqrt(np.sum((vv_mod - vv_ob)**2) / len(vv_ob.flatten()))
-    return rmse_hv #+ rmse_vv
+    return rmse_vv #+ rmse_hv
 
 
 def s1_r2(x0, sitenml='site.nml'):
@@ -98,7 +98,7 @@ def s1_plot_hv(x0, sitenml='site.nml', point='high'):
     ax.plot(date, hv_mod, 'o', label='hv simulated')
     ax.plot(date, hv_ob, 'X', label='hv observation')
     ax.set_xlabel('Date')
-    ax.set_ylabel(r'Backscatter m$^{2}$ m$^{-2}$')
+    ax.set_ylabel(r'Backscatter( m$^{2}$ m$^{-2}$)')
     fig.autofmt_xdate()
     plt.legend()
     plt.show()
@@ -113,8 +113,10 @@ def s1_plot_vv(x0, sitenml='site.nml', point='high'):
     nml_dic.write(sitenml, force=True)
     date, hv_mod, vv_mod, hv_ob, vv_ob = extract_s1_mod_obs_508(point, sitenml)
     fig, ax = plt.subplots()
-    ax.plot(date, vv_mod, 'o', label='vv_mod')
-    ax.plot(date, vv_ob, 'X', label='vv_ob')
+    ax.plot(date, vv_mod, 'o', label='vv simulated')
+    ax.plot(date, vv_ob, 'X', label='vv observation')
+    ax.set_xlabel('Date')
+    ax.set_ylabel(r'Backscatter( m$^{2}$ m$^{-2}$)')
     ax.legend()
     fig.autofmt_xdate()
     plt.show()

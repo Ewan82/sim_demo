@@ -149,7 +149,7 @@ def extract_s2_data(nc_file, hi_lat=48.253205, lo_lat=48.246775, hi_lon=11.72423
     lats = nc_dat.variables['y'][hi_lat_idx:lo_lat_idx]
     lons = nc_dat.variables['x'][lo_lon_idx:hi_lon_idx]
     nc_dat.close()
-    return band_dat, lats, lons
+    return band_dat, lats, lons, date[date_idx]
 
 
 def extract_s1_data(nc_file, hi_lat=48.253205, lo_lat=48.246775, hi_lon=11.724235, lo_lon=11.711744,
@@ -182,9 +182,9 @@ def extract_s1_data(nc_file, hi_lat=48.253205, lo_lat=48.246775, hi_lon=11.72423
     return vh, vv, lats, lons
 
 
-def plot_ndvi(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/munich/MNI_181001.nc'):
-    refl, lats, lons = extract_s2_data(nc_file=nc_file, hi_lat=48.253457, lo_lat=48.245823, lo_lon=11.711185,
-                                       hi_lon=11.724635, time=dt.datetime(2017,6,26,0,0))
+def plot_ndvi(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/munich/MNI_181001.nc', mnth=6, day=26):
+    refl, lats, lons, date = extract_s2_data(nc_file=nc_file, hi_lat=48.253457, lo_lat=48.245823, lo_lon=11.711185,
+                                       hi_lon=11.724635, time=dt.datetime(2017,mnth,day,0,0))
     ndvi = (refl[7, :, :]-refl[3, :, :]) / (refl[7, :, :]+refl[3, :, :])
     print ndvi.shape
     #fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -207,10 +207,11 @@ def plot_ndvi(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/munich
     #x,y = map(11.715308, 48.249028)
     #map.plot(x, y, '*', color=palette[1], markersize=10, markeredgewidth=0.5, markeredgecolor='k', label='Forest retrieval site')
     x, y = map(11.7211, 48.24936)
-    map.plot(x, y, '*', color=palette[1], markersize=10, markeredgewidth=0.5, markeredgecolor='k',
-             label='Gravel path retrieval site')
+    #map.plot(x, y, '*', color=palette[1], markersize=10, markeredgewidth=0.5, markeredgecolor='k',
+    #         label='Gravel path retrieval site')
     plt.legend(fancybox=True, frameon=True)
-    plt.title('NDVI Munich field site 26/06/2017')
+    date_str = date.strftime('%m/%d/%Y %H:%M')
+    plt.title('NDVI Munich field site '+date_str)
     plt.colorbar()
     #map.imshow(ndvi, cmap='viridis', vmax=1, vmin=0)
     #locs = np.arange(0, len(lons), len(lons)/6)
@@ -218,9 +219,69 @@ def plot_ndvi(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/munich
     return 'd'
 
 
-def plot_ndvi_ita(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/italy/ITA_181001.nc'):
-    refl, lats, lons = extract_s2_data(nc_file=nc_file, hi_lat=41.3798, lo_lat=41.3588, lo_lon=15.4751,
-                                       hi_lon=15.5045, time=dt.datetime(2017,3,26,0,0))
+def plot_ndvi_mni515(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/munich/MNI_181001.nc', mnth=6, day=26):
+    refl, lats, lons, date = extract_s2_data(nc_file=nc_file, hi_lat=48.2871, lo_lat=48.2761, lo_lon=11.7033,
+                                       hi_lon=11.7233, time=dt.datetime(2017,mnth,day,0,0))
+    ndvi = (refl[7, :, :]-refl[3, :, :]) / (refl[7, :, :]+refl[3, :, :])
+    print ndvi.shape
+    #fig, ax = plt.subplots(nrows=1, ncols=1)
+    map = draw_map(low_lat=lats[-1], high_lat=lats[0], low_lon=lons[0], high_lon=lons[-1])
+    lon, lat = np.meshgrid(lons, lats)
+    xx, yy = map(lon, lat)
+    palette = sns.color_palette("colorblind", 11)
+    map.pcolormesh(xx, yy, ndvi, cmap='viridis', vmax=1, vmin=0)
+    x,y = map(11.7121, 48.2843)
+    map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k')
+    plt.text(x+40, y+20, 'med')
+    x,y = map(11.7141, 48.2810)
+    map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k')
+    plt.text(x+40, y+20, 'low')
+    x,y = map(11.7149, 48.2781)
+    map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k', label='Field sampling points')
+    plt.text(x+40, y+20, 'high')
+    plt.legend(fancybox=True, frameon=True)
+    date_str = date.strftime('%m/%d/%Y %H:%M')
+    plt.title('NDVI Munich field site '+date_str)
+    plt.colorbar()
+    #map.imshow(ndvi, cmap='viridis', vmax=1, vmin=0)
+    #locs = np.arange(0, len(lons), len(lons)/6)
+    plt.show()
+    return 'd'
+
+
+def plot_ndvi_mni542(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/munich/MNI_181001.nc', mnth=6, day=26):
+    refl, lats, lons, date = extract_s2_data(nc_file=nc_file, hi_lat=48.2872, lo_lat=48.2806, lo_lon=11.7321,
+                                       hi_lon=11.7469, time=dt.datetime(2017,mnth,day,0,0))
+    ndvi = (refl[7, :, :]-refl[3, :, :]) / (refl[7, :, :]+refl[3, :, :])
+    print ndvi.shape
+    #fig, ax = plt.subplots(nrows=1, ncols=1)
+    map = draw_map(low_lat=lats[-1], high_lat=lats[0], low_lon=lons[0], high_lon=lons[-1])
+    lon, lat = np.meshgrid(lons, lats)
+    xx, yy = map(lon, lat)
+    palette = sns.color_palette("colorblind", 11)
+    map.pcolormesh(xx, yy, ndvi, cmap='viridis', vmax=1, vmin=0)
+    x,y = map(11.7399, 48.2842)
+    map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k')
+    plt.text(x+40, y+20, 'low')
+    x,y = map(11.7385, 48.2839)
+    map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k')
+    plt.text(x+20, y+10, 'high')
+    x,y = map(11.7393, 48.2828)
+    map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k', label='Field sampling points')
+    plt.text(x+40, y+20, 'med')
+    plt.legend(fancybox=True, frameon=True)
+    date_str = date.strftime('%m/%d/%Y %H:%M')
+    plt.title('NDVI Munich field site '+date_str)
+    plt.colorbar()
+    #map.imshow(ndvi, cmap='viridis', vmax=1, vmin=0)
+    #locs = np.arange(0, len(lons), len(lons)/6)
+    plt.show()
+    return 'd'
+
+
+def plot_ndvi_ita(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/italy/ITA_181001.nc', mnth=6, day=26):
+    refl, lats, lons, date = extract_s2_data(nc_file=nc_file, hi_lat=41.3798, lo_lat=41.3588, lo_lon=15.4751,
+                                       hi_lon=15.5045, time=dt.datetime(2017,mnth,day,0,0))
     ndvi = (refl[7, :, :]-refl[3, :, :]) / (refl[7, :, :]+refl[3, :, :])
     print ndvi.shape
     #fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -239,7 +300,8 @@ def plot_ndvi_ita(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/it
     map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k', label='Field sampling points')
     plt.text(x+40, y+20, 'sg11')
     plt.legend(fancybox=True, frameon=True)
-    plt.title('NDVI Segezia field site 26/03/2017')
+    date_str = date.strftime('%m/%d/%Y %H:%M')
+    plt.title('NDVI Segezia field site '+date_str)
     plt.colorbar()
     #map.imshow(ndvi, cmap='viridis', vmax=1, vmin=0)
     #locs = np.arange(0, len(lons), len(lons)/6)
@@ -247,9 +309,9 @@ def plot_ndvi_ita(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/it
     return 'd'
 
 
-def plot_ndvi_pol(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/poland/POL_181001.nc'):
-    refl, lats, lons = extract_s2_data(nc_file=nc_file, hi_lat=53.6373, lo_lat=53.6317, lo_lon=22.9769,
-                                       hi_lon=22.9867, time=dt.datetime(2017,3,26,0,0))
+def plot_ndvi_pol(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/poland/POL_181001.nc', mnth=6, day=26):
+    refl, lats, lons, date = extract_s2_data(nc_file=nc_file, hi_lat=53.6373, lo_lat=53.6317, lo_lon=22.9769,
+                                       hi_lon=22.9867, time=dt.datetime(2017,mnth,day,0,0))
     ndvi = (refl[7, :, :]-refl[3, :, :]) / (refl[7, :, :]+refl[3, :, :])
     print ndvi.shape
     #fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -268,7 +330,8 @@ def plot_ndvi_pol(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/po
     map.plot(x, y, '*', color='r', markersize=10, markeredgewidth=0.5, markeredgecolor='k', label='Field sampling points')
     plt.text(x+40, y+20, '3')
     plt.legend(fancybox=True, frameon=True)
-    plt.title('NDVI Biebrza field site 26/03/2017')
+    date_str = date.strftime('%m/%d/%Y %H:%M')
+    plt.title('NDVI Biebrza field site '+date_str)
     plt.colorbar()
     #map.imshow(ndvi, cmap='viridis', vmax=1, vmin=0)
     #locs = np.arange(0, len(lons), len(lons)/6)
@@ -278,7 +341,7 @@ def plot_ndvi_pol(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S2/po
 
 def plot_backscat(nc_file='/export/cloud/nceo/users/if910917/sentinel_data/S1/munich/MNI_2017.nc'):
     vh, vv, lats, lons = extract_s1_data(nc_file=nc_file, hi_lat=48.253457, lo_lat=48.245823, lo_lon=11.711185,
-                                       hi_lon=11.724635, time=dt.datetime(2017,3,8,0,0))
+                                       hi_lon=11.724635, time=dt.datetime(2017,3,26,0,0))
     map = draw_map(low_lat=lats[-1], high_lat=lats[0], low_lon=lons[0], high_lon=lons[-1], res=(lats[1]-lats[0])/2)
     lon, lat = np.meshgrid(lons, lats)
     xx, yy = map(lon, lat)
